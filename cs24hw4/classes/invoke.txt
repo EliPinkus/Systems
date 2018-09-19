@@ -1,0 +1,6 @@
+Given: %r8 contains address to properly initialized Shape subclass
+
+mov     %r8, %rdi     # move adr of subclass to rdi
+mov     (%rdi), %r9   # move adr of getVolume function to r9
+mov     (%r9), %r10
+call    %r10          # call getVolume with arg rdi = subclass obj

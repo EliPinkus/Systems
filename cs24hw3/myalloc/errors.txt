@@ -1,0 +1,81 @@
+a)
+Address that did not originate from myalloc:
+
+This results in most frequently segmentation fault
+since the program is trying to access
+memory from the actual heap that isn't allocated for use in our simple
+allocator. Therefore, our program has no impact on the values of the memory in
+question and the results of manipulations upon that memory are undefined
+in the context of our program.
+
+Address that is contained within memory block returned by myalloc:
+
+If the memory block is used, this action will result in the memory block being
+partitioned and some information being overwritten. We can have one of many
+issues. If we look to free data that is in the middle of a block our program
+need not terminate however, by our myfree call, we would insert an
+extraneous header and footer for a memory block into a block that was already
+considered as part of a larger block. Therefore, the outer
+memory header for the block we
+intruded upon, will not reflect the changes made and will indicate that Our
+block is of the same length as before and is empty or full as before. If the
+entire memory manipulation caused by this faulty free takes place in a single
+memory block, as in it doesn't cross more than one or
+intrude upon headers/footers,
+then freeing of the outer block, would
+mend any data corruption associated with the bad free because the
+extraneous header and data will simply be overwritten in the freeing of the
+block it was embedded into. We  have much nastier effects if the bad free
+call curropts the data or block headers of adjacent blocks. This causes
+the allocator to loose track of its data since our headers are the way in which
+the allocator navigates through the memory space.
+
+
+Address that has already been freed:
+Nothing changes if we free a block that is already free. This is because myfree
+works by setting the header/footer value to an explicitely
+positive value and then looking to coalesce, as opposed
+to toggling the sign. This means that if you free a block twice, the header
+continues to indicate that the block is free. The free call will search for
+blocks to coalesce and remerge into the larger block that was there before the
+call.
+
+b)
+Address that did not originate from myalloc:
+We can check for this in any number of ways whether it be assert or some other
+program termination method. Since we know the start point and the size of Our
+data pool, we can use basic arithmetic to check that the argument to myfree is
+a memory location in our pool. (see next explanation for how to ensure it is
+the start of a block).
+
+Address that is contained within memory block returned by myalloc:
+
+The main issue here that we need to fix is that we need to make sure that
+myfree can only be called on addresses that are the begining of a memory blocks.
+If this check was in place it would fix the issues associated with this mistake.
+
+I propose 2 ways in which to do this, each with their own tradeoffs.
+
+Upon calling myfree, one could have the program iterate through the data pool,
+going one block at a time checking ultimately to see if the address passed to
+myfree is the start of a block (i.e. memory immediately after a header).
+This check would take linear time and would not require any additional space.
+The coalescing process as written already takes linear time though, so the
+overall asymptotic runtime would not change.
+
+Alternatively, one could implement a mapping from memory locations to a boolean
+value indicating whether or not the location is the start of a block. this
+mapping would be created and updated during the allocation process and would
+not have major impacts on runtime, however it would require substantially more
+memory to store the mapping. The mapping could be accessed in constant time,
+which makes this a quicker way to execute the necessary check. We could
+terminate the program if the check (by either method) fails
+
+Address that has already been freed:
+
+Although myalloc as written handles this issue fairly well, in that it does Not
+present major bugs to the allocator, we could make the program more robust by
+terminating and alerting the user to this type of error. This is a simple matter
+of ensuring that abs(header) == -(header) or that header < 0 for a block
+that we ask to free. This ensures that the memory block was occupied
+(header was negative) before the free call

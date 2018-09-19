@@ -1,0 +1,9 @@
+What does the assembly code do?
+-------------------------------
+
+
+Line 1: moves x to rax
+Line 2: puts 3*x at rax
+Line 3: puts 3x+12 at rax
+line 4: puts 3x^2+12x at rax
+line 5: puts 3x^2+12x-17 at rax

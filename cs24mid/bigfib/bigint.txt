@@ -1,0 +1,123 @@
+------------------------------------------------------------------------------
+1)  Pseudocode for __add_bigint
+
+Casual Pseudocode:
+
+# __add_bigint
+# int __add_bigint(uint64_t *a, uint64_t *b, uint8_t size)
+# x86-64 implementation of addition for big int data type consisting of several
+# 64 byte ints collectively represented in an array.
+#
+#
+# RETURNS 0 if overflow, else 1
+
+i = size (will serve as loop variable)
+__add_bigint:
+    if size == 0 return 1
+    clear carry flag
+    save pointer to a[0]
+    save pointer to b[0]
+
+__add_bigint_loop:
+    add b[i] += a[i]   (w/carry)
+
+    inc pointer s.t. we have a[i+1] and b[i+1]
+    dec i
+
+    jumpnz to __add_bigint_loop
+
+__add_bigint_continue:
+    if carry jump and retun 0
+    otherwise return 1
+
+
+Less Casual Pseudocode:
+
+# __add_bigint
+# int __add_bigint(uint64_t *a, uint64_t *b, uint8_t size)
+# x86-64 implementation of addition for big int data type consisting of several
+# 64 byte ints collectively represented in an array.
+# ARGS: uint64_t *a  -> rdi
+#       uint64_t *b  -> rsi
+#       uint8_t size -> rdx
+#
+# RETURNS rax -> 0 if overflow, else 1
+
+First 3 args in x86-64:
+%rdi = a ptr
+%rsi = b ptr
+%rdx = size
+
+__add_bigint:
+    compare 0, %rdx
+    jumpz   __add_bigint_ret_one
+    clr carry flg
+    %r8 = %rdx  # loop variable i
+    %r9 = %rdi   # pointers for a[i] and b[i] that will range during loop
+    %r10 = %rsi
+
+__add_bigint_loop:
+    (%r10) += (%r9)      # b[i] += a[i]
+    %r9, %r10 += $8      # a, b ptrs update
+
+    dec %r8
+
+    jumpnz __add_bigint_loop
+
+__add_bigint_continue:
+    jnc _add_bigint_ret  # jump to return 0 if carry
+    %rax = 1             # return 1 otherwise
+    ret
+
+__add_bigint_ret_zero:
+    %rax = 0
+    ret
+
+__add_bigint_ret_one:
+    %rax = 1
+    ret
+
+THIS Pseudocode IS READY TO BE IMPLEMENTED :)
+
+
+------------------------------------------------------------------------------
+3)  Largest n for fib(n) using four 64-bit quadwords for bigint:
+We have 256 bits in all so:
+
+max overall number we can store is 2^256 - 1 approx equal 1.1579x10^77
+We consecutively narrow the range via wolfram untill we see that:
+
+fib(370) > 2^256 - 1 == FALSE
+fib(371) > 2^256 - 1 == TRUE
+
+So the largest n we store fib(n) in 4 quadwords is n=370
+
+
+THE ABOVE WAS DONE BEFORE I GOT MY IMPLEMENTATION TO WORK
+Once i got my implementation to work, I was able to replicate my above findings
+by simply attempting to calculate increasing values of fib(n) until by
+program indicated overflow. This was a lot easier but i didn't want to totally
+delete my previous work.
+
+n=370
+
+------------------------------------------------------------------------------
+4)  Number of 64-bit quadwords required for fib(2000), and value of fib(2000):
+
+
+fib(2000) approx equal 4.22 x 10^(417)
+We search for minimum integer n s.t. 2^(64*n)-1 > fib(2000)
+
+I do this by comparing the value of 2^(64*n+1)-1 to fib(2000) that I calculated
+via wolfram. I started with a guess of 100, found that to be far to big,
+reduced upper bound to 50, etc... until n was found.
+
+(this takes a heck of a lot of checks and narrowing of intervals)
+num quadwords = 22
+
+THE ABOVE WAS DONE BEFORE I GOT MY IMPLEMENTATION TO WORK
+Once i got my implementation to work, I was able to replicate my above findings
+by simply attempting to calculate fib(2000) with increasing number of quadwords
+until there was no overflow.
+
+num quadwords = 22

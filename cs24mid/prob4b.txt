@@ -1,0 +1,59 @@
+Explicit Allocator Scenario:  Allocation Fails under Best-Fit but not First-Fit
+===============================================================================
+
+
+The following sequence will result in fail for Best-Fit but not First fit:
+
+Consider total heap size 16KB:
+
+(1) z = alloc(8KB)
+(2) a = alloc(3KB)
+(3) free(z)
+(4) b = alloc(2KB)
+(5) d = alloc(3KB)
+(6) e = alloc(5KB)
+(7) free(d)
+(8) f = alloc(4KB)
+
+We will diagram the state of the heap at various points in the above sequence.
+
+For Best Fit we have:
+after (5):
+
++----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+|free                                   |a             |b        |d             |
+|8KB                                    |3KB           |2KB      |3KB           |
++----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+
+after (7)):
+
++----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+|e                       |free          |a             |b        |free          |
+|5KB                     |3KB           |3KB           |2KB      |3KB           |
++----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+
+We can see that there is no way to allocate 4KB for f and thus the allocator
+fails
+
+
+For First Fit we have:
+after (5)
++----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+|b        |d             |free          |a             |                        |
+|2KB      |3KB           |3KB           |3KB           |4KB                     |
++----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+
+after (7)
++----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+|b        |free                         |a             |e                       |
+|2KB      |6KB                          |3KB           |5KB                     |
++----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+
+We can see that there is a free block of 6KB that can service the request (8)
+which calls for 4KB for f.
+
+Final state of Heap:
++----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+|b        |f                  |free     |a             |e                       |
+|2KB      |4KB                |2KB      |3KB           |5KB                     |
++----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+

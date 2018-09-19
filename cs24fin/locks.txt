@@ -1,0 +1,49 @@
+Locking Primitives
+==================
+
+1a.  Benefit of spinlocks over normal locks
+spinlock would be preferable in situations were threads are blocked only
+for a short time because with spinlocks there is no need for the facilities
+for passive waiting which include context switches and process scheduling,
+both of which can be relatively time intensive. In cases where the time
+for such processes would exceed time wasted by blocking other threads, we
+would be better off with spinlocks.
+
+
+1b.  Spinlocks on 1-processor systems
+in 1 core setups spinlocks don't provide a benefit because in these cases
+if a process is 'spinning' the clock it will block other threads from running
+and will remain locked indefinitely.
+
+
+
+2a.  Read/write lock fairness issues
+These rules are unfair in the situation were there are many readers
+trying to acquire the read-write lock because it is possible that a writer
+may never aquire the lock:
+
+- A reader requests locks and gets it because it is free
+- a writer requests lock but is blocked because of above reader
+- more readers attempt to aquire lock and gets it because a reader has it
+- early readers release to later readers and the writer never gets the key
+
+The above is a stepwise process by which a writer may never get the key.
+
+
+2b.  Fair read/write lock design
+
+If a reader R1 attempts to acquire the read-write lock:
+
+    if no one holds the lock, grant read access to R1 immediately
+    if another reader R2 holds the lock, and there are blocked writers, grrant
+          read access to R1 immediately.
+    if another reader R2 already holds the lock, and there are blocked writers
+          block R1 until blocked writers release lock.
+    if a writer W holds the lock, R1 is blocked until W releases the lock.
+
+If a writer W1 attempts to acquire the read-write lock:
+    if no one holds the lock, grant write access to W1 immediately.
+    if the lock is currently held by some number of readers, block W1 until
+          currently blocked readers release lock.
+    if another writer W2 currently holds the lock, W1 is blocked until W2 has
+          released the block.

@@ -1,0 +1,37 @@
+Answers for the "Arrays, Pointer Arithmetic, and Structs" section of CS24 HW3:
+1)
+We start with
+
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+By casting (p+3) as an int pointer we add the data at 3 bits in
+and by following bytewise little endian we insert to get:
+
+00 00 00 EF BE AD DE 00 00 00 00 00 00 00 00 00
+
+by casting p to an int pointer and THEN adding 3, we are actually
+doing the insertion, 3 * sizeof(int) = 3 * 4 = 12 bytes down to get:
+
+00 00 00 EF BE AD DE 00 00 00 00 00 BE BA FE CA
+
+
+2)
+int id;             # 4 bytes and first item in struct so ofset = 0
+char code[5];       # 5 * sizeof(char) = 5 * 1 = 5 bytes and after id,
+                    # offset of 4 from start of Struct
+
+struct entry* next; # address is 8 bytes and its ofset from beg. Struct
+                    # is 16 bytes because gcc will add 7 bytes of padding
+                    # to correspond with our largest member (8 byte address)
+                    # to the end of the aformentioned 9 bytes s.t. the field
+                    # address is 8 byte aligned
+
+
+3)
+Each entry is 24 bytes long. The 5th entry starts at an offset of
+24 * 4 = 96 bytes from the shared address of p and arr.
+the char array 'code' in each entry is at an offset of 4 bytes from the begining of
+the entry. The 4th element of code is 3 bytes from the start of code.
+
+Altogether we would need an offset = 96 + 4 + 3 = 103 for
+arr[4].code[3] to refer to the same location as p[offset]

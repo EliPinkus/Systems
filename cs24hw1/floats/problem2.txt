@@ -1,0 +1,23 @@
+Part A:
+-------
+
+These results are different because of rounding error that takes place during the addition of each of the numbers to the result.
+
+Adding in increasing order of magnitude means that small sums accumulated early on in the sequence are more likely to become significant enough collectively such that the larger numbers aren't vastly greater than the running result and therefore the smaller numbers are less likely to be truncated, resulting in potential accuracy loss.
+
+Adding in decreasing order means that if you have a running sum at a point that is much greater than the next number to be considered, there is a higher chance that the next number will be insignificant to the arithmatic and immediately truncated which results in loss of data, since it is in decreasing order, this truncation would continue for the remainder of the items on the list and error will accumulate.
+
+In no particular order relative to magnitude means that we will see an artbitrary mix of the above two effects.
+
+
+Adding in increasing order of mag is the most accurate because it has the least likelihood of truncation as smaller numbers are able to accumulate and become significant collectively before they are added to larger numbers. This results in less loss of information and therefore a more accurate result.
+
+
+Adding in increasing order of mag would perform poorly in cases where the sequence of numbers increases orders of magnitude at a sudden rate. In these cases it is possible that each addition causes the previous running sum to be truncated if it is significantly less than the value of the next item in the sequence.
+
+Part B:
+-------
+
+Pairwise summation generates a more accurate result because it prevent the situation that often causes roundoff in the naive approach in that we don't add a single (potentially truncatable) value to a larger collective value that is the result of previous summations in the sequence. In pairwise summations, each summation at any given recursive subruitine, involves the addition of two or fewer floating point values (that themselves may have been calculated in the same way), which reduces the probability that we have to add an orders of magnitude larger number to a smaller number, since the summations don't involve a long sequential summation.
+
+Obviously one could conceive of a contrived ordering of certain float values that would lead this method to be innaccurate however it performs well in the general case for the qualitative reasons discussed above.

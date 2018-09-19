@@ -1,0 +1,13 @@
+We see from the output that only producer 0 is adding elements to the buffer
+
+main calls producer 0, then producer 1, and then consumer in that order
+Problematically, the producers will generate as many elements as it can
+until the buffer is filled and then it will yield.
+So under this scheme, producer 0 will fill the buffer, yield,
+then producer 1 will observe a full buffer and yield.
+Then consumer will come along and clear the buffer.
+Then producer 0 will get called again and the proccess repeats.
+Thus producer 1 will never get to produce anything.
+
+Cooperative thread excecution is not fair because a thread is able to
+fill a shared resource making it impossible for another thread to excecute.

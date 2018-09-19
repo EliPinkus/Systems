@@ -1,0 +1,73 @@
+Answer to Problem 3.63, CS:APP3e pp.314-315
+-------------------------------------------
+(all digits are represented in base 10)
+We will begin by considering the values in the jump table:
+
+CASE 1:
+Starts at: 4005a1--
+save 8*x to rax
+return (break)
+
+CASE 2:
+Starts at: 4005c3--
+saves 75 + x to rax
+return (break)
+
+CASE 3:
+same as case 1
+
+CASE 4:
+Starts at: 4005aa--
+save x to rax
+shift rax right arithmatically 3 times
+return (break)
+
+CASE 5:
+Starts at: 4005b2--
+save x to rax
+shift left 4 times
+save (x << 4) - x to rax
+save rax=(x << 4) - x to rdi
+save ((x << 4) - x)^2 to rdi
+save ((x << 4) - x)^2 + 75 to rax
+return (break)
+
+
+CASE 6:
+Starts at:4005bf
+save x^2 to rdi
+save x^2 + 75 to rax
+return (break)
+
+
+the first few lines subtract 60 from n indicating that our consecutive cases
+are n=60-65. The program will jump to line 17 if n is not on that range which
+makes our default case 75+x
+
+All this considered we would have:
+
+
+long switch_prob(long x, long n)
+{
+    long result = x;
+    switch (n)
+    {
+        case 60:
+        case 62:
+            result *= 8;
+            break;
+        case 63:
+            result = result >> 3;
+            break;
+        case 64:
+            result = (result << 4)-result;
+            /* fall through */
+        case 65:
+            result = result * result;
+            /* fall through */
+        default:
+            result += 75;
+    }
+
+    return result;
+}

@@ -1,0 +1,93 @@
+Page Replacement Policies and Scan Resistance
+=============================================
+
+1a.  Characterization of FIFO policy
+in FIFO, pages are loaded into the end of a queue and the page at the front
+it evicted. Thus, FIFO considers recency of access in the sense that pages
+loaded later on are most likely to be recently accessed, however that is not
+infallible. With regards to scans, the policy strongly considers recency
+since pages are only accessed once..
+
+FIFO does not consider frequency of access.
+
+
+1b.  Characterization of Second Chance / Clock policy
+This policy builds upon FIFO by considered the accessed bit for pages and if
+it is set then the page is put on the back of the queue and the access bit
+is cleared as opposed to evicting the page. We can see that this policy
+considers recency of access, however, it doesn't Specifically evict the least
+recently accessed page because if there are multiple pages with accessed bit
+unset, then the one at the front of the queue is evicted to its not the
+specific least recently used page necessarily.
+
+The policy doesn't directly consider frequency of access beyond the fact
+that most recently accessed pages might tend to be the most frequently accessed
+
+
+
+1c.  Characterization of Aging policy
+Aging policy considers both recency and frequency of access but pays more
+attention to recency. This is because the highest bit is used as the accessed
+value which is a proxy for recency of access. At regular intervals the age
+value of a page is bitshifted which accounts for frequency as prior
+accesses are accounted for by the age value.
+
+
+2.  Susceptibility of Aging policy to scans
+Aging policy is rather susceptible to scans due to the prioritization of
+recency over frequency.
+
+To illustrate consider a page in a scan that was recently accessed but only
+one time, it would have an age value with a 1 in most significant bit and 0
+otherwise (10000000) whereas a page not in the scan that was less recently
+accessed but accessed several times would have an age value that is the
+opposite of the other page (01111111) and the second page would be evicted
+despite page 1 being in the scan.
+
+
+3a.  Comparison of 2Q to LRU-2
+2Q is very correspondent to LRU-2 with small exception. 2Q evicts from the back
+of a queue A1 first.
+We know that any page in that queue A1 will have a second most recent access
+time of infinity. Thus, evicting from A1 is equivilent to evicting a page
+with the highest second most recent access time as in LRU-2.
+In the case where there is nothing in A1, pages are evicted from the back of Am
+which will also be the least recently used page which differs slightly from
+LRU-2 which just used LRU-1 when there are not multiple accesses
+
+
+3b.  Design a version of 2Q that uses a timer interrupt and "accessed" bit
+
+Upon mapping of a page for the first time:
+clear accessed bit
+Set permissions to none s.t. any access causes page fault
+
+Upon page fault:
+set accessed bit
+set permissions to read and write
+
+Upon timer interrupt:
+A1 and Am should be updated as they are in usual 2Q
+clear accessed bit
+set permissions to none for next interval.
+
+Follow eviction criteria for 2Q when necessary.
+
+
+
+3c.  Comparison of your policy to 2Q
+The proposed policy is increasingly similar to 2Q as the timer interrupts
+increase in frequency and ultimately reduces to 2Q if timer interrupt occurs
+at each step.
+
+The proposed policy WILL effectively indentify pages that are part of the scan.
+This is because such pages are only accessed one time and in one time period.
+This means they will be in A1 but NOT in Am so it can differentiate.
+
+The proposed policy DOES NOT effectively indentify pages that are not part of
+scan. This is because the policy will see multiple accesses in one
+interrupt interval as one access. This means that pages not in scan will be
+preferred for eviction which demonstrates the major deviation from the
+regular 2Q scheme. It also clearly demonstrates why decreasing interval
+of interrupt approximates 2Q increasly closely as longer intervals mean
+it is more likely for pages to be accessed multiple times.

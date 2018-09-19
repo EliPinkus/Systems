@@ -1,0 +1,74 @@
+a = 1
+b = 2
+b + a
+gc()
+c = [a,b,c]
+c = [a,b,5]
+c[2] = c
+c
+del a
+del b
+gc()
+quit()
+1
+1 + 63
+6 * 3
+5 % 3
+gc()
+quit()
+ p =1
+r = 2
+del r
+gc()
+a = [1,2,3]
+a[1]=a
+a
+del a
+gc()
+quit()
+a = 200
+b = [a , 2, 3]
+b[2] = b
+b
+del b
+'poop'
+'waddduyyya'
+'malllllaaawwwwwa'
+'waddduuyyyyyya;
+'waduya'
+b = 2
+a = 1
+60
+60
+60
+60
+60
+a = [a,b,c,]
+'a;sdlfkjasdfl;kajsdfajsdhflaksdfjhalsdfhjasdlfkj'
+'as;ldkfjalskdjf;lskdajfal;sdkjfasdl'
+'waddduyyyyyyyaaaaa'
+gc()
+'malllllaaawwwwa'
+c = 'waddduuyyya'
+del c
+gc()
+quit
+quit()
+'poop'
+gc()
+po = 69
+twelve = 12
+po + twelve
+gc()
+del po
+gc()
+'pooooooooooooooooooooooooooooooooop'
+'poooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooop'
+'ppppoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooop'
+quit()
+'waddddduuyyyyyyaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+quit()
+'wadduya'
+'wadduya'
+'wad'
+gc()

@@ -1,0 +1,37 @@
+Explicit Allocator Scenario:  Allocation Fails under First-Fit but not Best-Fit
+===============================================================================
+
+THe following sequence will result in fail for FIrst-Fit but not Best fit:
+
+Consider total heap size 16KB:
+
+z = alloc(4KB)
+a = alloc(4KB)
+free(z)
+b = alloc(7KB)
+c = alloc(1KB)
+d = alloc(4KB)
+
+
+We will diagram the state of the heap after c is allocated:
+
+For best fit we get:
++----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+|free               |a                  |b                                 |c   |
+|4KB                |4KB                |7KB                               |1KB |
++----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+
+So in this case, d would be allocated successfully at the 4KB free block:
++----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+|d                  |a                  |b                                 |c   |
+|4KB                |4KB                |7KB                               |1KB |
++----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+
+For first fit we get:
++----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+|c   |free          |a                  |b                                 |free|
+|1KB |3KB           |4KB                |7KB                               |1KB |
++----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+
+We can see in this case that there does not exist a block of size 4KB to
+allocate d, so first fit fails to allocate.

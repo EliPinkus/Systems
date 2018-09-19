@@ -1,0 +1,13 @@
+Expression:  n = n & (n - 1)
+----------------------------
+
+If n begins as a number with a non zero number of 1s, the result of the above expression will be a number with exactly 1 fewer 1.
+
+It works according to two cases:
+
+in the case where n has a 1 in the 1s place, we proceed with bitwise and between n and a number that is identical to n in all ways other than it has a 0 in the 1s place instead of a 1. When the bitwise and is applied the result is that n will be reasigned to a number with one fewer 1, in this case it is specifically the number n-1.
+
+In the case where n has a 0 in the ones place, things are a little more involved. If you subtract 1 from a number with a 0 in the ones place in binary, each consecutive subsequent 0 immediately to the left of the ones place will be turned into a 1 and the first 1 to the left of the ones place will become a 0 accordingly. Thus since there is a 0 in the ones place, and one 1 will be turned into a zero, the number n-1 will have the same digit as n in all places to the left of the aformentioned changes. Thus, since we change the rightmost 1 to a zero, only the remaining 1s will match up between n and n-1, thus when you do bitwise and the resulting reassignment of n has exactly one fewer 1 than the original n.
+
+
+One could simply count the number of times one must apply the above transformation until the result has no 1s and is therefore 0 as bitwise & is a relatively simple operation for the CPU to excecute. (see code)

@@ -1,0 +1,34 @@
+Bugs in rl_decode() function:
+-----------------------------
+
+
+
+First issue:
+in find space loop as written, we are looking to keep count of the total
+chars needed. The problem is that we add a count to %bl (lower byte of %ebx)
+without considering overflow for numbers > 255. We can fix this by first
+considering the carry flag (unsigned overflow) before proceeding, and adding
+256 (for wraparound) if necesary.
+
+Second Issue:
+This issue come shortly after the first. When we increment rcx (loop variable)
+by 1 and use that as our next location to add to count, we are counting both
+the value representing the number of times a char is repeated (i.e. the actual
+item of interest) AS WELL as adding the actual value itself since we are
+iterating 1 byte at a time. To remedy this we must increment by 2 instead, as
+to skip the character values.
+
+
+Third Issue:
+As written, the code does not push the values of certain caller-save registers,
+namely, %rsi, and %rdx, to the stack. This means these values in find_space_done
+can be overwritten in malloc.
+We push them onto the stack to preserve their values to fetch later on.
+
+
+Fourth Issue:
+As written, the write_loop function fails to increment register %r10, which
+we use to keep track of where in memory of %eax we would like to place each
+set of consecutive values. We place it above the decrementing of %bh as to
+avoid interfering with the flag setting required for the conditional jump to
+write_loop.

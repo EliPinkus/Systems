@@ -1,0 +1,45 @@
+Instruction Decoding:  Questions
+================================
+
+1)  Offsets of MUL_LOOP, SKIP_ADD, MUL_DONE
+Lines Before MUL_LOOP:
+MOV -> 2 bytes
+AND -> 2 bytes
+BRZ -> 1 byte
+offset = 5
+
+Lines Before SKIP_ADD:
+MOV -> 2 bytes
+AND -> 2 bytes
+BRZ -> 1 byte
+
+MOV -> 2 bytes
+AND -> 2 bytes
+BRZ -> 1 byte
+ADD -> 2 bytes
+offset = 12
+
+Lines Before MUL_DONE:
+MOV -> 2 bytes
+AND -> 2 bytes
+BRZ -> 1 byte
+
+MOV -> 2 bytes
+AND -> 2 bytes
+BRZ -> 1 byte
+ADD -> 2 bytes
+
+SHL -> 1 byte
+SHR -> 1 byte
+BNZ -> 1 byte
+offset = 15
+
+2)  Assembly instructions and encoded bit-patterns
+
+R5 := R5-6:
+Inst: SUB 6, R5
+Binary: 1010 0 101 00000110
+
+R4 := R4^R1:
+Inst: XOR R1, R4
+Binary: 1110 1 100 00000 001

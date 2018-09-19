@@ -1,0 +1,13 @@
+Stack Contents of fact(3)
+-------------------------
+
+Address     Value       Description
+--------    --------    ------------------------------------
+0x1008      Unknown     Unknown
+0x1000      Unknown     return address of the outer function call
+0x0ff8      0x0003      Arg for fact(3)
+0x0ff0      0x2020      return address for fact_resume
+0x0fe8      0x0002      Arg for fact(2)
+0x0fe0      0x2020      return address for fact_resume
+0x0fd8      0x0001      Arg for fact(1)
+0x0fd0      0x2020      return address for fact_resume

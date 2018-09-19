@@ -1,0 +1,10 @@
+0a96  # 0010 1 010 010 110 -- R6 -> R2 - R2 : Quotient -> 0 by default; R2 will be a constant
+021f  # 0000 1 000 011 111 -- R7 -> R0 + R3 : Remainder -> dividend by default; R3 will be 0
+0bcf  # 0010 1 111 001 111 -- R7 -> R7 - R1 : Remainder -> Remainder - Divisor; Start Loop
+23e5  # 1000 1 111 100 101 -- R5 -> R7 & R4 : R4 is a bitmask, result is used for flag to loop or not
+2947  # 1010 0 101 000111 -- Branch to  END if R5 != 0 (i.e. flag for negative value)
+1786  # 0101 1 110 000 110 -- R6 -> incr(R6) : update quotient
+2882  # 1010 0 010 000010 -- branch to Start loop
+03cf   0000 1 111 001 111 -- end loop R7 -> R7 + R1
+3c00  # 1111 0 000 000 000 -- DONE
+

@@ -1,0 +1,106 @@
+Buddhabrot Renderer
+===================
+
+1.  Size of `points` array
+We have a size of:
+sizeof(complex_t) * max_iters = 8 * 2000 = 16000 bytes
+The struct complex_t contains two 4 byte floats = 8 bytes overall
+
+Thus, this can fit into any of the hardware caches which are all of
+size > 16000 bytes
+
+
+2.  Memory reference pattern of `points` array
+The compute_bbrot() function uses point in the array by first calling
+compute_bbrot_point() which accesses the elements in order from the 1st to the
+z_n-th which is a stride 1 refference patter. Within the compute_bbrot_point()
+call there is a subcall to record_points_list, which is turn has a subcall to
+record_point for from the 1st to the z_n-th values in the points array
+in order in a stride 1 reference pattern as well.
+
+Thus, this program exhibits good spatial locality by accesses data in
+contiguous blocks via a tight stride reference pattern throughout the calls.
+The program also has solid temporal locality since it makes multiple passes
+through the same data.
+
+
+3.  Hardware caches and `points` array
+The program will receive a strong benefit from the hardware caches. Firstly,
+because the L1 cache is substantially large enough to hold the entire array,
+we can reasonably believe that the cache will be able to house the data (along
+with other potentially useful data) in the L1 cache. This, along with a
+consistent stride 1 reference pattern and good overall locality.
+I think that because of this accesses will occur at approximately L1 speeds.
+
+
+4.  Size of `array` image-data
+We have a size of:
+bbrot_size * bbrot_size * sizeof(uint32_t) = 2048^2 * 4 = 16,777,216
+as can be seen from the allocation statement
+
+approx equal to 16.77 megabytes which is larger than any of the hardware caches
+
+
+5.  Memory reference pattern of `array` image-data
+The record_point_list() with subcall to record_point, iterate over the
+elements in points and manipulate the pixel data at the corresponding location.
+This results in an inconsistent reference pattern since it depends on the
+locations of the pixels which are in no consistent, linear pattern in memory.
+Thus the stride is neither low nor consistent so we conclude that the
+program exhibits poor spacial locality. The program never re-accesses
+previously accessed data so we can also see that it exhibits poor temporal
+locality.
+
+
+6.  Hardware caches and `array` image-data
+I don't think the accesses will benefit much from the hardware caches.
+For the reasons discussed in 5, namely, large data size relative to cache,
+and poor overall locality, it is unreasonable to believe that the program
+will benefit much from hardware caches, especially L1 and L2 since the data
+size is overwhelmingly larger than those level caches. Altogether I would
+estimate the accesses to occur between L3 and main memory speeds as a result.
+
+
+
+7.  Multithreading and hardware caches
+The introduction of multicore and sharing of the same array
+brings about the issue of poor cache coherence.
+Consider the case in which a thread is accessing data in a cache block
+and loads it into its devoted cache, meanwhile another thread would like to
+write via its cache to the same cache block. As we can see this
+multicore arrangement can cause coherence problems that must be accounted for
+which will take time to do.
+
+Larger N means the effects of this issue will
+worsen since it becomes increasingly likely that the aforementioned situation
+will occur with increasingly many core (each with their own L1, L2 caches)
+doing work on the same program.
+
+As image size increases, this problem will become less problematic for the
+opposite reason. This there is more space being used for the image, we
+are less likely to run into the coherence problem mentioned above since there
+are more pixels with which to work with.
+
+
+8.  Improvements to Buddhabrot Renderer
+
+Single Thread:
+One could preprocess the data to improve locality. Specifically, prior to
+the editing of the image array data, one could collect the z_n values for each
+starting point into a collective array and then sort before moving onto the
+iterations and incrementaions. This would improve spatial locality by
+closing the distance in memory between items that are accessed consecutively.
+This would also improve temporal locality since the program could access
+the elements several times.
+We recognize as drawbacks that this approac requires space for the new array
+and time for the sorting.
+
+Multi thread:
+To improve multithreading performance, one could divide the image array into
+segments, providing each core with its own segment of the image data and
+allowing the program to run in parallel on seperate data, recombining after
+the fact. This would prevent the issue of cache coherence problems by
+eliminating the case in which separate cores wish to manipulate the same
+cache block (mentioned in 7).
+We recognize as drawbacks that this approach requires a time cost to split and
+recombine the array which would scale with the number of cores in use.

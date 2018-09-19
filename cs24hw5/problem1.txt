@@ -1,0 +1,38 @@
+a)
+We know that misses will require 100 clocks and hits only require 1
+
+Let h = hitrate
+
+We have
+cycles = h*(1) + (1-h)*100
+
+We have a processor with 3*10^9 cycles/second
+
+We have that our program is running 7.5*10^8 instructions per second
+
+So we want:
+7.5*10^8 instructions per second = 3*10^9 cycles / ((h*(1) + (1-h)*100) cycles
+                                                                / instruction)
+
+We can solve for h:
+
+h=0.9697
+
+so the miss rate is 0.0303 = 3.03 %
+
+
+b)
+
+We want 2*7.5*10^8 instructions per second
+
+So we would need:
+
+2*7.5*10^8 = 3*10^9 cycles / ((h*(1) + (1-h)*100) cycles / instruction)
+
+h = 0.9899
+
+so the miss rate would need to be 0.0101
+
+So the necesarry change in miss rate:
+
+0.0303-.0101 = 0.0202 is how much we need to decrease miss rate

@@ -1,0 +1,7 @@
+The program enters an infinite loop because in order
+for the stopping condition to ever be true, there must
+exist some integer, k, s.t. dividend - k * divisor < 0,
+so for dividend = 10 > 0 and divisor = 0, there is obviosly
+no such k, therefore no matter how many times the program
+subtracts the divisor from the dividend, we will never reach
+the terminating criteria.
